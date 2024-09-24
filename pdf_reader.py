@@ -28,16 +28,17 @@ output.append(data)
 for name in output:
     raw_data: str = name.decode(encoding="utf-8")
     if "|" in raw_data:
-        data_list: list[str] = raw_data.split("|")
+        data_list: list[str] = raw_data.split(sep="|")
+        print(data_list)
         result_list: list[dict[str, str]] = [{}]
         for strng in data_list:
-            if "|" in strng:
-                key, val = strng.split(":", 1)  # type: ignore
+            if ":" in strng:
+                key, val = strng.split(sep=":", maxsplit=1)  # type: ignore
                 if key in result_list[-1]:
                     result_list.append({})
                 result_list[-1][key] = val  # type: ignore
 
 if result_list:
-    print(result_list[0])
+    print(result_list)
 df: pd.DataFrame = pd.DataFrame.from_dict(data=result_list, orient="columns")  # type: ignore
 print(df.head())
