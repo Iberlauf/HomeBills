@@ -4,12 +4,10 @@ from pathlib import Path
 import pandas as pd
 from pdf2image import convert_from_bytes
 from PIL.Image import Image
-from PyPDF2 import PdfReader
 from pyzbar import pyzbar
 
 
 pdf_path: Path = Path()
-pdfPages: PdfReader = PdfReader(stream=pdf_path)
 with open(file=pdf_path, mode="rb") as f:
     page_bytes: bytes = f.read()
 pages: list[Image] = convert_from_bytes(pdf_file=page_bytes, dpi=600)
@@ -34,12 +32,12 @@ for name in output:
         result_list: list[dict[str, str]] = [{}]
         for strng in data_list:
             if "|" in strng:
-                key, val = strng.split(":", 1)
+                key, val = strng.split(":", 1)  # type: ignore
                 if key in result_list[-1]:
                     result_list.append({})
-                result_list[-1][key] = val
+                result_list[-1][key] = val  # type: ignore
 
 if result_list:
     print(result_list[0])
-df: pd.DataFrame = pd.DataFrame.from_dict(data=result_list, orient="columns")
+df: pd.DataFrame = pd.DataFrame.from_dict(data=result_list, orient="columns")  # type: ignore
 print(df.head())

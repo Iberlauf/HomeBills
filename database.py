@@ -1,7 +1,7 @@
 """Database module."""
 
-from sqlmodel import SQLModel, create_engine
 from sqlalchemy import Engine
+from sqlmodel import SQLModel, create_engine
 
 
 db_name: str = "database.db"

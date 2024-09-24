@@ -1,8 +1,8 @@
 """Models module."""
 
 from enum import Enum
-from sqlmodel import SQLModel, Field, Relationship
 from pydantic import EmailStr
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class BusinessType(str, Enum):
@@ -57,7 +57,7 @@ class BusinessBase(SQLModel):
     name: str
     contact_email: EmailStr
     bank_account: int
-    producer: str
+    pdf_producer: str
     type: BusinessType
 
 
