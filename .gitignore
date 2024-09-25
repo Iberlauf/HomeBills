@@ -1,7 +1,1 @@
-# Ignore virtual environment folder
-myenv/ 
-__pycache__/ 
-*.py[cod] 
-.env 
-.vscode/ 
-.DS_Store 
+*.db 
