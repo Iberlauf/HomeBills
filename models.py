@@ -1,6 +1,8 @@
 """Models module."""
 
 from enum import Enum
+from datetime import date
+from decimal import Decimal
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -27,12 +29,12 @@ class AddressBase(SQLModel):
     postal_code: int
 
 
-class AddressCreate(AddressBase, table=True):
+class Address(AddressBase, table=True):
     """Adress create model."""
 
     id: int | None = Field(default=None, primary_key=True)
-    users: list["UserBase"] = Relationship(back_populates="address")
-    businesses: list["BusinessBase"] = Relationship(back_populates="address")
+    users: list["User"] = Relationship(back_populates="address")
+    businesses: list["Business"] = Relationship(back_populates="address")
 
 
 class UserBase(SQLModel):
@@ -40,30 +42,48 @@ class UserBase(SQLModel):
 
     first_name: str
     last_name: str
-    email: EmailStr
+    email: EmailStr | None
 
 
-class UserCreate(UserBase, table=True):
+class User(UserBase, table=True):
     """User create model."""
 
     id: int | None = Field(default=None, primary_key=True)
-    address_id: int = Field(default=None, foreign_key="addresscreate.id")
-    address: AddressCreate = Relationship(back_populates="users")
+    address_id: int = Field(default=None, foreign_key="address.id")
+    address: Address = Relationship(back_populates="users")
 
 
 class BusinessBase(SQLModel):
     """Business base model."""
 
     name: str
-    contact_email: EmailStr
+    contact_email: EmailStr | None
     bank_account: int
     pdf_producer: str
     type: BusinessType
 
 
-class BusinessCreate(BusinessBase, table=True):
+class Business(BusinessBase, table=True):
     """Business create model."""
 
     id: int | None = Field(default=None, primary_key=True)
-    address_id: int = Field(default=None, foreign_key="addresscreate.id")
-    address: AddressCreate = Relationship(back_populates="businesses")
+    address_id: int = Field(default=None, foreign_key="address.id")
+    address: Address = Relationship(back_populates="businesses")
+    bills: list["Bill"] = Relationship(back_populates="business")
+
+
+class BillBase(SQLModel):
+    """Bill base model."""
+
+    name: str
+    payed: bool = Field(default=False)
+    date_payed: date = Field(default=date.today())
+    ammount: Decimal = Field(default=0, decimal_places=2)
+
+
+class Bill(BillBase, table=True):
+    """Bill create model."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    business_id: int = Field(default=None, foreign_key="business.id")
+    business: Business = Relationship(back_populates="bills")
