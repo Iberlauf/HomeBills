@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from sqlmodel import Session, select
+from sqlmodel import Session
 from pydantic import EmailStr
 from database import create_db_and_tables, engine
 from models import Address, User, Business, Bill, BusinessType
@@ -67,7 +67,7 @@ def create_business(  # pylint: disable=(R0913:too-many-arguments)
         session.refresh(new_business)
 
 
-def create_billl(
+def create_bill(
     bill_name: str,
     bill_payed: bool,
     datepayed: date,
