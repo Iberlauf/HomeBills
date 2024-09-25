@@ -57,7 +57,6 @@ class BusinessBase(SQLModel):
     """Business base model."""
 
     name: str
-    contact_email: EmailStr | None
     bank_account: int
     pdf_producer: str
     type: BusinessType

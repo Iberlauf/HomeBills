@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from sqlmodel import Session
+from sqlmodel import Session, select
 from pydantic import EmailStr
 from database import create_db_and_tables, engine
 from models import Address, User, Business, Bill, BusinessType
@@ -11,16 +11,16 @@ from models import Address, User, Business, Bill, BusinessType
 def create_address(strt: str, nmb: str, cty: str, pst: int):
     """Function that creates a new address."""
 
-    with Session(engine) as session:
+    with Session(bind=engine) as session:
         new_address = Address(
             street=strt,
             number=nmb,
             city=cty,
             postal_code=pst,
         )
-        session.add(new_address)
+        session.add(instance=new_address)
         session.commit()
-        session.refresh(new_address)
+        session.refresh(instance=new_address)
 
 
 def create_user(
@@ -31,21 +31,20 @@ def create_user(
 ):
     """Function that creates a new user."""
 
-    with Session(engine) as session:
+    with Session(bind=engine) as session:
         new_user = User(
             first_name=f_name,
             last_name=l_name,
             email=e_mail,
             address_id=addressid,
         )
-        session.add(new_user)
+        session.add(instance=new_user)
         session.commit()
-        session.refresh(new_user)
+        session.refresh(instance=new_user)
 
 
-def create_business(  # pylint: disable=(R0913:too-many-arguments)
+def create_business(
     business_name: str,
-    contactemail: EmailStr,
     bankaccount: int,
     pdfproducer: str,
     business_type: BusinessType,
@@ -53,18 +52,17 @@ def create_business(  # pylint: disable=(R0913:too-many-arguments)
 ):
     """Function that creates a new business."""
 
-    with Session(engine) as session:
+    with Session(bind=engine) as session:
         new_business = Business(
             name=business_name,
-            contact_email=contactemail,
             bank_account=bankaccount,
             pdf_producer=pdfproducer,
             type=business_type,
             address_id=addressid,
         )
-        session.add(new_business)
+        session.add(instance=new_business)
         session.commit()
-        session.refresh(new_business)
+        session.refresh(instance=new_business)
 
 
 def create_bill(
@@ -76,7 +74,7 @@ def create_bill(
 ):
     """Function that creates a new bill."""
 
-    with Session(engine) as session:
+    with Session(bind=engine) as session:
         new_bill = Bill(
             name=bill_name,
             payed=bill_payed,
@@ -84,15 +82,55 @@ def create_bill(
             ammount=bill_ammount,
             business_id=businessid,
         )
-        session.add(new_bill)
+        session.add(instance=new_bill)
         session.commit()
-        session.refresh(new_bill)
+        session.refresh(instance=new_bill)
+
+
+def get_address(address_id: int) -> Address | None:
+    """Function that selects an address."""
+    with Session(bind=engine) as session:
+        address = session.get(entity=Address, ident=address_id)
+        if address:
+            return address
+        return None
+
+
+def get_user(user_id: int) -> User | None:
+    """Function that selects a user."""
+    with Session(bind=engine) as session:
+        user = session.get(entity=User, ident=user_id)
+        if user:
+            return user
+        return None
+
+
+def get_buiness(business_id: int) -> Business | None:
+    """Function that selects a business."""
+    with Session(bind=engine) as session:
+        business = session.get(entity=Business, ident=business_id)
+        if business:
+            return business
+        return None
+
+
+def select_business_by_account(account: int) -> Business | None:
+    """Function that selects a business."""
+    with Session(bind=engine) as session:
+        business = session.exec(
+            select(Business).where(Business.bank_account == account)
+        ).first()
+        if business:
+            return business
+        return None
 
 
 def main() -> None:
     """Main function."""
 
     create_db_and_tables()
+    # get_user(user_id=1)
+    # get_address(address_id=1)
 
 
 if __name__ == "__main__":
