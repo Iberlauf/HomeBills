@@ -14,12 +14,26 @@ from main import select_business_by_account, create_bill
 
 
 def ammount_cleaner(ammount_str: str) -> Decimal:
-    """Clean the ammount from the string."""
+    """Function for cleaning the ammount string.
+
+    Args:
+        ammount_str (str): String representation of the ammount.
+
+    Returns:
+        Decimal: Decimal representation of the ammount.
+    """
     return Decimal(ammount_str.removeprefix("RSD").replace(",", "."))
 
 
 def pdf_reader(pdf_path: Path) -> list[dict[str, str]] | None:
-    """Get all the QR codes from .pdf file and read."""
+    """_summary_
+
+    Args:
+        pdf_path (Path): Path object to .pdf file.
+
+    Returns:
+        list[dict[str, str]] | None: Returns the list of dictionaries from the pdf file if there is a qr code in said file.
+    """
     with open(file=pdf_path, mode="rb") as f:
         page_bytes: bytes = f.read()
     pages: list[Image] = convert_from_bytes(pdf_file=page_bytes, dpi=600)
