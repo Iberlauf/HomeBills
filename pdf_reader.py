@@ -1,4 +1,4 @@
-"""Get all the QR codes from .pdf file and read."""
+"""Get all the QR codes from .pdf file, read them and create a bill instance if the QR code is a valid NBS IPS code."""
 
 from pathlib import Path
 from decimal import Decimal
@@ -8,9 +8,9 @@ from datetime import date
 from pdf2image import convert_from_bytes
 from PIL.Image import Image
 from pyzbar import pyzbar
-
-
-from main import select_business_by_account, create_bill
+from main import select_business_by_account
+from create_instances import create_bill
+from models import Business
 
 
 def ammount_cleaner(ammount_str: str) -> Decimal:
@@ -26,13 +26,13 @@ def ammount_cleaner(ammount_str: str) -> Decimal:
 
 
 def pdf_reader(pdf_path: Path) -> list[dict[str, str]] | None:
-    """_summary_
+    """Get all the QR codes from .pdf file and return them as a list of dictionaries.
 
     Args:
         pdf_path (Path): Path object to .pdf file.
 
     Returns:
-        list[dict[str, str]] | None: Returns the list of dictionaries from the pdf file if there is a qr code in said file.
+        list[dict[str, str]] | None: List of dictionaries from the .pdf file if there is a valid NBS IPS QR code in said file.
     """
     with open(file=pdf_path, mode="rb") as f:
         page_bytes: bytes = f.read()
@@ -69,11 +69,13 @@ def pdf_reader(pdf_path: Path) -> list[dict[str, str]] | None:
 
 pdfpath: Path = Path()
 
-results = pdf_reader(pdf_path=pdfpath)
-if results:
+results: list[dict[str, str]] | None = pdf_reader(pdf_path=pdfpath)
+if results is not None:
     result_dict: dict = results[0]
-    dict_amount = ammount_cleaner(result_dict["I"])
-    business = select_business_by_account(account=int(result_dict["R"]))
+    dict_amount: Decimal = ammount_cleaner(result_dict["I"])
+    business: Business | None = select_business_by_account(
+        account=int(result_dict["R"])
+    )
     if business and business.id is not None:
         create_bill(
             bill_name=f"{business.type.value} - {date.today().strftime('%B')}",
