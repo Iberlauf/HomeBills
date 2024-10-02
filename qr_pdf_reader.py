@@ -3,10 +3,11 @@ read them and create a bill instance
 if the QR code is a valid NBS IPS code.
 """
 
+import re
+from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
-# from datetime import date
 # import pandas as pd
 from pdf2image import convert_from_bytes
 from PIL.Image import Image
@@ -18,7 +19,7 @@ from main import select_business_by_account
 from models import Business
 
 
-def ammount_cleaner(ammount_str: str) -> Decimal:
+def clean_decimal(ammount_str: str) -> Decimal:
     """Function for cleaning the ammount string.
 
     Args:
@@ -27,7 +28,25 @@ def ammount_cleaner(ammount_str: str) -> Decimal:
     Returns:
         Decimal: Decimal representation of the ammount.
     """
-    return Decimal(ammount_str.removeprefix("RSD").replace(",", "."))
+    return Decimal(value=ammount_str.removeprefix("RSD").replace(",", ".").strip())
+
+
+def extract_dates(date_string: str) -> tuple[date, date]:
+    """Extracts dates from string.
+
+    Args:
+        date_string (str): String that has two dates.
+
+    Returns:
+        tuple[date, date]: Tuple of two dates.
+    """
+    date_pattern: str = r"(\d{2}\.\d{2}\.\d{4})"
+    matches: list[str] = re.findall(pattern=date_pattern, string=date_string)
+    dates: list[date] = [
+        datetime.strptime(date_str, "%d.%m.%Y").date() for date_str in matches
+    ]
+
+    return dates[0], dates[1]
 
 
 def pdf_reader(pdf_path: Path) -> list[dict[str, str]] | None:
@@ -79,8 +98,8 @@ pdfpath: Path = Path()
 results: list[dict[str, str]] | None = pdf_reader(pdf_path=pdfpath)
 if results is not None:
     result_dict: dict = results[0]
-    dict_amount: Decimal = ammount_cleaner(result_dict["I"])
-    business: Business | None = select_business_by_account(
+    new_amount: Decimal = clean_decimal(ammount_str=result_dict["I"])
+    new_business: Business | None = select_business_by_account(
         account=int(result_dict["R"])
     )
     # if business and business.id is not None:
@@ -90,6 +109,7 @@ if results is not None:
     #         datepayed=date.today(),
     #         bill_ammount=dict_amount,
     #         businessid=business.id,
+    #         period=
     #     )
 
     # df: pd.DataFrame = pd.DataFrame.from_dict(data=results, orient="columns")  # type: ignore

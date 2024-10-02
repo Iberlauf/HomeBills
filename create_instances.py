@@ -72,6 +72,9 @@ def create_bill(  # pylint: disable=(R0913:too-many-arguments)
     bill_payed: bool,
     datepayed: date,
     bill_ammount: Decimal,
+    paycode: str,
+    paymodel: str,
+    callno: str,
     businessid: int,
     billing_period: tuple[date, date],
 ):
@@ -83,6 +86,9 @@ def create_bill(  # pylint: disable=(R0913:too-many-arguments)
             payed=bill_payed,
             date_payed=datepayed,
             ammount=bill_ammount,
+            pay_code=paycode,
+            pay_model=paymodel,
+            call_no=callno,
             business_id=businessid,
             period=billing_period,
         )
