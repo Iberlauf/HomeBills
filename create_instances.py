@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from pydantic import EmailStr
+from pydantic import EmailStr, HttpUrl
 from sqlmodel import Session
 from database import engine
 from models import Address, Bill, Business, BusinessType, User
@@ -43,12 +43,13 @@ def create_user(
         session.refresh(instance=new_user)
 
 
-def create_business(
+def create_business(  # pylint: disable=(R0913:too-many-arguments)
     business_name: str,
     bankaccount: int,
     pdfproducer: str,
     business_type: BusinessType,
     addressid: int,
+    business_url: HttpUrl,
 ):
     """Function that creates a new business."""
 
@@ -59,18 +60,20 @@ def create_business(
             pdf_producer=pdfproducer,
             type=business_type,
             address_id=addressid,
+            url=business_url,
         )
         session.add(instance=new_business)
         session.commit()
         session.refresh(instance=new_business)
 
 
-def create_bill(
+def create_bill(  # pylint: disable=(R0913:too-many-arguments)
     bill_name: str,
     bill_payed: bool,
     datepayed: date,
     bill_ammount: Decimal,
     businessid: int,
+    billing_period: tuple[date, date],
 ):
     """Function that creates a new bill."""
 
@@ -81,6 +84,7 @@ def create_bill(
             date_payed=datepayed,
             ammount=bill_ammount,
             business_id=businessid,
+            period=billing_period,
         )
         session.add(instance=new_bill)
         session.commit()
