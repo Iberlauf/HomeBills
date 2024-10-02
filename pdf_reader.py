@@ -1,15 +1,20 @@
-"""Get all the QR codes from .pdf file, read them and create a bill instance if the QR code is a valid NBS IPS code."""
+"""Get all the QR codes from .pdf file,
+read them and create a bill instance
+if the QR code is a valid NBS IPS code.
+"""
 
-from pathlib import Path
 from decimal import Decimal
-from datetime import date
+from pathlib import Path
 
+# from datetime import date
 # import pandas as pd
 from pdf2image import convert_from_bytes
 from PIL.Image import Image
 from pyzbar import pyzbar
+
 from main import select_business_by_account
-from create_instances import create_bill
+
+# from create_instances import create_bill
 from models import Business
 
 
@@ -76,14 +81,14 @@ if results is not None:
     business: Business | None = select_business_by_account(
         account=int(result_dict["R"])
     )
-    if business and business.id is not None:
-        create_bill(
-            bill_name=f"{business.type.value} - {date.today().strftime('%B')}",
-            bill_payed=True,
-            datepayed=date.today(),
-            bill_ammount=dict_amount,
-            businessid=business.id,
-        )
+    # if business and business.id is not None:
+    #     create_bill(
+    #         bill_name=f"{business.type.value} - {date.today().strftime('%B')}",
+    #         bill_payed=True,
+    #         datepayed=date.today(),
+    #         bill_ammount=dict_amount,
+    #         businessid=business.id,
+    #     )
 
     # df: pd.DataFrame = pd.DataFrame.from_dict(data=results, orient="columns")  # type: ignore
     # print(df.head())
