@@ -37,7 +37,9 @@ def pdf_reader(pdf_path: Path) -> list[dict[str, str]] | None:
         pdf_path (Path): Path object to .pdf file.
 
     Returns:
-        list[dict[str, str]] | None: List of dictionaries from the .pdf file if there is a valid NBS IPS QR code in said file.
+        list[dict[str, str]] | None:
+        List of dictionaries from the .pdf file
+        if there is a valid NBS IPS QR code in said file.
     """
     with open(file=pdf_path, mode="rb") as f:
         page_bytes: bytes = f.read()
