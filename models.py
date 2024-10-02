@@ -3,7 +3,7 @@
 from enum import Enum
 from datetime import date
 from decimal import Decimal
-from pydantic import EmailStr
+from pydantic import EmailStr, HttpUrl
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -60,6 +60,7 @@ class BusinessBase(SQLModel):
     bank_account: int
     pdf_producer: str
     type: BusinessType
+    url: HttpUrl
 
 
 class Business(BusinessBase, table=True):
@@ -78,6 +79,7 @@ class BillBase(SQLModel):
     payed: bool = Field(default=False)
     date_payed: date = Field(default=date.today())
     ammount: Decimal = Field(default=0, decimal_places=2)
+    period: tuple[date, date]
 
 
 class Bill(BillBase, table=True):
