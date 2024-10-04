@@ -75,7 +75,6 @@ def create_business(  # pylint: disable=(R0913:too-many-arguments)
 
 def create_bill(  # pylint: disable=(R0913:too-many-arguments)
     bill_name: str,
-    bill_payed: bool,
     datepayed: date,
     bill_ammount: Decimal,
     paycode: str,
@@ -89,7 +88,6 @@ def create_bill(  # pylint: disable=(R0913:too-many-arguments)
     with Session(bind=engine) as session:
         new_bill = Bill(
             name=bill_name,
-            payed=bill_payed,
             date_payed=datepayed,
             ammount=bill_ammount,
             pay_code=paycode,
@@ -138,7 +136,6 @@ def new_bill_from_pdf(pdf_path: Path) -> None:
         with Session(bind=engine) as session:
             new_bill = Bill(
                 name=f"{new_business.name} from {new_period[0]} to {new_period[1]}",
-                payed=True,
                 date_payed=datetime.today(),
                 ammount=new_ammount,
                 pay_code=new_pay_code,

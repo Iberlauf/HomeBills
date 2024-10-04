@@ -134,7 +134,6 @@ class BillBase(SQLModel):
     """Bill base model."""
 
     name: str
-    payed: bool = Field(default=False)
     date_payed: date = Field(default=date.today())
     ammount: Decimal = Field(default=0, decimal_places=2)
     period: tuple[date, date]

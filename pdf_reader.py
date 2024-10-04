@@ -15,7 +15,8 @@ def clean_account_string(account_string: str) -> str:
     """Cleans the account string.
 
     Args:
-        account_string (str): Input string representation of inegers that consist of three parts separated by spaces.
+        account_string (str): Input string representation of inegers
+        that consist of three parts separated by spaces.
 
     Returns:
         str: 18-digit string representation of integer.
