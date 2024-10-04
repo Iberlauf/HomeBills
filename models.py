@@ -30,7 +30,8 @@ class AddressBase(SQLModel):
     postal_code: int
 
     @field_validator("postal_code")
-    def validate_postal_code(cls, value: int) -> int:  # pylint: disable=(E0213:no-self-argument)
+    @classmethod
+    def validate_postal_code(cls, value: int) -> int:
         """
         Validate that the postal code is a 5-digit integer.
 
@@ -82,7 +83,8 @@ class BusinessBase(SQLModel):
     url: HttpUrl
 
     @field_validator("bank_account")
-    def validate_account_number(cls, value: int) -> int:  # pylint: disable=(E0213:no-self-argument)
+    @classmethod
+    def validate_account_number(cls, value: int) -> int:
         """
         Validate that the bank account number is exactly 18 digits.
 
@@ -100,7 +102,8 @@ class BusinessBase(SQLModel):
         return value
 
     @field_validator("url")
-    def validate_http_url(cls, value: HttpUrl) -> HttpUrl:  # pylint: disable=(E0213:no-self-argument)
+    @classmethod
+    def validate_http_url(cls, value: HttpUrl) -> HttpUrl:
         """
         Validate that the URL starts with 'http' or 'https'.
 
