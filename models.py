@@ -1,9 +1,10 @@
 """Models module."""
 
-from enum import Enum
 from datetime import date
 from decimal import Decimal
-from pydantic import EmailStr, HttpUrl
+from enum import Enum
+
+from pydantic import EmailStr, HttpUrl, field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -27,6 +28,24 @@ class AddressBase(SQLModel):
     number: str
     city: str
     postal_code: int
+
+    @field_validator("postal_code")
+    def validate_postal_code(cls, value: int) -> int:  # pylint: disable=(E0213:no-self-argument)
+        """
+        Validate that the postal code is a 5-digit integer.
+
+        Args:
+            value (int): The postal code to validate.
+
+        Returns:
+            int: The validated postal code if it meets the requirements.
+
+        Raises:
+            ValueError: If the postal code is not a 5-digit number.
+        """
+        if value < 10000 or value > 99999:
+            raise ValueError("Postal code must be a 5-digit number")
+        return value
 
 
 class Address(AddressBase, table=True):
@@ -61,6 +80,42 @@ class BusinessBase(SQLModel):
     pdf_producer: str
     type: BusinessType
     url: HttpUrl
+
+    @field_validator("bank_account")
+    def validate_account_number(cls, value: int) -> int:  # pylint: disable=(E0213:no-self-argument)
+        """
+        Validate that the bank account number is exactly 18 digits.
+
+        Args:
+            v (int): The bank account number to validate.
+
+        Returns:
+            int: The validated bank account number if it meets the requirements.
+
+        Raises:
+            ValueError: If the bank account number is not 18 digits long.
+        """
+        if value < 10**17 or value > 10**18 - 1:
+            raise ValueError("Bank account number must be exactly 18 digits")
+        return value
+
+    @field_validator("url")
+    def validate_http_url(cls, value: HttpUrl) -> HttpUrl:  # pylint: disable=(E0213:no-self-argument)
+        """
+        Validate that the URL starts with 'http' or 'https'.
+
+        Args:
+            value (HttpUrl): The URL to validate.
+
+        Returns:
+            HttpUrl: The validated URL if it meets the requirements.
+
+        Raises:
+            ValueError: If the URL does not start with 'http' or 'https'.
+        """
+        if value.scheme not in ["http", "https"]:
+            raise ValueError("URL must start with 'http' or 'https'")
+        return value
 
 
 class Business(BusinessBase, table=True):
